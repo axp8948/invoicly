@@ -1,18 +1,18 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+import React from 'react'
+import { Routes, Route } from 'react-router-dom'
+import Layout from './components/Layout'
+import HomePage from './pages/Home'
 
+
+export default function App() {
   return (
-    <>
-    <div>
-      <h1 className='bg-black, font-sans, font-bold'>Welcome To Invoicely</h1>
-    </div>
-    </>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<HomePage />} />
+        
+      </Route>
+    </Routes>
   )
 }
 
-export default App
