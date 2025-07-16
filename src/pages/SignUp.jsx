@@ -1,16 +1,19 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Signup() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (password !== confirmPassword) {
-      alert("Passwords do not match")
+      alert('Passwords do not match')
       return
     }
+   
   }
 
   return (
@@ -19,7 +22,9 @@ export default function Signup() {
         onSubmit={handleSubmit}
         className="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-md text-white space-y-6"
       >
-        <h2 className="text-3xl font-bold text-center">Sign Up for <span className="text-lime-300">Invoicly</span></h2>
+        <h2 className="text-3xl font-bold text-center">
+          Sign Up for <span className="text-lime-300">Invoicly</span>
+        </h2>
 
         <input
           type="email"
@@ -54,8 +59,18 @@ export default function Signup() {
         >
           Sign Up
         </button>
+
+        <p className="text-center text-sm text-white/80">
+          Already have an account?{' '}
+          <button
+            type="button"
+            className="text-lime-300 hover:underline"
+            onClick={() => navigate('/login')}
+          >
+            Sign In
+          </button>
+        </p>
       </form>
     </div>
   )
 }
-

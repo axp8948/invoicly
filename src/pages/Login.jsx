@@ -1,12 +1,14 @@
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
   const handleSubmit = (e) => {
     e.preventDefault()
-   
+    
   }
 
   return (
@@ -15,7 +17,9 @@ export default function Login() {
         onSubmit={handleSubmit}
         className="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-md text-white space-y-6"
       >
-        <h2 className="text-3xl font-bold text-center">Login to <span className="text-lime-300">Invoicly</span></h2>
+        <h2 className="text-3xl font-bold text-center">
+          Login to <span className="text-lime-300">Invoicly</span>
+        </h2>
 
         <input
           type="email"
@@ -41,9 +45,28 @@ export default function Login() {
         >
           Login
         </button>
+
+                <div className="text-center">
+          <button
+            type="button"
+            className="text-sm text-lime-300 hover:underline transition"
+            onClick={() => navigate('/forgot-password')}
+          >
+            Forgot Password?
+          </button>
+        </div>
+
+        <p className="text-center text-sm text-white/80">
+          Don't have an account?{' '}
+          <button
+            type="button"
+            className="text-lime-300 hover:underline"
+            onClick={() => navigate('/signup')}
+          >
+            Sign Up
+          </button>
+        </p>
       </form>
     </div>
   )
 }
-
-
