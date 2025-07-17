@@ -1,12 +1,50 @@
-# React + Vite
+# Invoicly 🧾
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A clean and simple web app to help users track and manage their invoices. Built using **React + Vite** for fast development, this tool is ideal for freelancers, small businesses, and anyone who wants a clutter-free invoice management experience.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Tech Stack
 
-## Expanding the ESLint configuration
+- React (Frontend)
+- Vite (Build Tool)
+- JavaScript (ESLint configured)
+- GitHub + GitHub Codespaces (for collaboration)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+##  Getting Started
+
+### Prerequisites
+
+Make sure you have the following installed:
+
+- [Node.js](https://nodejs.org/en/) (v18 or higher)
+- npm (comes with Node)
+- Git
+
+---
+
+###  Option 1: Run Locally
+
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/invoicly.git
+   cd invoicly
+
+## Install Dependencies
+
+- npm install
+
+## Start the development Server
+
+-npm run dev
+
+###  Option 2: Run in GitHub Codespaces
+
+	1.	Go to the GitHub repository
+	2.	Click the <> Code button
+	3.	Select “Open with Codespaces” → “New codespace”
+	4.	Once the codespace starts, run:
+              npm install
+              npm run dev
