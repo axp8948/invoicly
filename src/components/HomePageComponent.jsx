@@ -14,11 +14,15 @@ export default function Home() {
   return (
 <div className="flex flex-col items-center justify-center text-center px-4">
   <span className="text-5xl md:text-6xl font-extrabold text-white leading-tight mb-4">
-    Welcome to <span className="text-orange-700 text-transparent bg-clip-text">MavThread</span>
+    Welcome to <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-emerald-700">
+  Invoicly
+</span>
   </span>
 
   <ReactTyped
-    strings={['By Mavericks', 'For Mavericks']}
+    strings={['Manage Your Invoices',
+  'Track Payments with Ease',
+  'Simplify Your Freelance Finances',]}
     typeSpeed={50}
     backSpeed={30}
     loop
