@@ -8,7 +8,11 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    
+
+  }
+
+  const handleLogin = () => {
+    navigate("/dashboard")
   }
 
   return (
@@ -42,11 +46,12 @@ export default function Login() {
         <button
           type="submit"
           className="w-full py-3 bg-lime-400 hover:bg-lime-300 text-white font-semibold rounded-md transition-all"
+          onClick={handleLogin}
         >
           Login
         </button>
 
-                <div className="text-center">
+        <div className="text-center">
           <button
             type="button"
             className="text-sm text-lime-300 hover:underline transition"
