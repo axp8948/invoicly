@@ -5,7 +5,7 @@ import Layout from './components/Layout'
 import HomePage from './pages/Home'
 import Signup from './pages/SignUp'
 import Login from './pages/Login'
-
+import ForgotPassword from './pages/ForgotPassword'
 
 export default function App() {
   return (
@@ -14,7 +14,7 @@ export default function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
-        
+        <Route path="/forgot-password" element={<ForgotPassword />} />
       </Route>
     </Routes>
   )
