@@ -1,19 +1,18 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const navigate = useNavigate()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
-    e.preventDefault()
-
-  }
+    e.preventDefault();
+  };
 
   const handleLogin = () => {
-    navigate("/dashboard")
-  }
+    navigate("/dashboard");
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-700 to-slate-900 px-4 p-2">
@@ -55,23 +54,23 @@ export default function Login() {
           <button
             type="button"
             className="text-sm text-lime-300 hover:underline transition"
-            onClick={() => navigate('/forgot-password')}
+            onClick={() => navigate("/forgot-password")}
           >
             Forgot Password?
           </button>
         </div>
 
         <p className="text-center text-sm text-white/80">
-          Don't have an account?{' '}
+          Don't have an account?{" "}
           <button
             type="button"
             className="text-lime-300 hover:underline"
-            onClick={() => navigate('/signup')}
+            onClick={() => navigate("/signup")}
           >
             Sign Up
           </button>
         </p>
       </form>
     </div>
-  )
+  );
 }
