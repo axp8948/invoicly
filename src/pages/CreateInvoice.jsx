@@ -1,25 +1,38 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useInvoices } from "../context/InvoiceContext";
 
 export default function CreateInvoice() {
-  const [invoiceNumber, setInvoiceNumber] = useState("");
   const [invoiceDate, setInvoiceDate] = useState("");
   const [invoiceCompanyName, setCompanyName] = useState("");
   const [invoiceAmount, setAmount] = useState("");
-  const [invoicePayStatus, setPayStatus] = useState("");
+  const [invoicePayStatus, setPayStatus] = useState("N");
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
+  const { addInvoice } = useInvoices();
 
   //Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Here invoice data would typically be sent to backend, but for now just simulating delay and redirect
+    
+    // Create the invoice using the context
     setTimeout(() => {
+      const newInvoice = addInvoice({
+        date: invoiceDate,
+        company: invoiceCompanyName,
+        amount: invoiceAmount,
+        status: invoicePayStatus
+      });
+      
       setIsLoading(false);
-      setSuccessMessage("Invoice created");
-      //navigate("/dashboard"); //may need to add back in once dashboard is implemented...to be tested
+      setSuccessMessage(`Invoice ${newInvoice.invoiceNumber} created successfully!`);
+      
+      // Navigate to dashboard after a brief delay to show success message
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 1500);
     }, 1000);
   };
 
@@ -29,14 +42,9 @@ export default function CreateInvoice() {
         onSubmit={handleSubmit}
         className="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-md text-white space-y-6"
       >
-        <input
-          type="text"
-          placeholder="Invoice Number"
-          className="w-full px-4 py-3 bg-white/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-300 placeholder-white/80"
-          value={invoiceNumber}
-          onChange={(e) => setInvoiceNumber(e.target.value)}
-          required
-        />
+        <h2 className="text-3xl font-bold text-center">
+          Create <span className="text-lime-300">Invoice</span>
+        </h2>
 
         <input
           type="date"

@@ -13,7 +13,14 @@ export default function Header() {
   }
 
   return (
-    <header className="fixed top-0 left-0 w-full backdrop-blur-md bg-white/10 z-50 p-3">
+    <header 
+      className="fixed top-0 left-0 w-full bg-slate-800 z-50 p-3" 
+      style={{ 
+        backdropFilter: 'none', 
+        filter: 'none',
+        backgroundColor: '#1e293b'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo */}
         <h1 className="text-2xl font-extrabold tracking-wide">
