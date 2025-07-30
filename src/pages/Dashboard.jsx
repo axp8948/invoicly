@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInvoices } from "../context/InvoiceContext";
 import authService from "../appwrite/auth";
+import InvoiceCharts from "../components/InvoiceChartComponent";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,6 +13,7 @@ export default function Dashboard() {
     return saved ? parseInt(saved) : 30;
   });
   const [showSettings, setShowSettings] = useState(false);
+  const [showReport, setShowReport] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -40,37 +42,38 @@ export default function Dashboard() {
   };
 
 
-// 1. Add this handler above your return statement
-const handleExport = () => {
-  // 1.1 Define your CSV headers
-  const headers = ["Invoice #", "Date", "Company", "Amount", "Status"];
+  const handleExport = () => {
+    const headers = ["Invoice #", "Date", "Company", "Amount", "Status"];
 
-  // 1.2 Map each invoice into a row array
-  const rows = invoices.map(inv => [
-    inv.invoiceNumber,
-    new Date(inv.date).toLocaleDateString(),
-    inv.company,
-    inv.amount.toFixed(2),
-    inv.status,
-  ]);
+    const rows = invoices.map(inv => [
+      inv.invoiceNumber,
+      new Date(inv.date).toLocaleDateString(),
+      inv.company,
+      inv.amount.toFixed(2),
+      inv.status,
+    ]);
 
-  // 1.3 Build the CSV content
-  const csvContent =
-    [headers, ...rows]
-      .map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(","))
-      .join("\n");
 
-  // 1.4 Create a downloadable blob and click it
-  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.setAttribute("download", "invoices.csv");
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-  URL.revokeObjectURL(url);
-};
+    const csvContent =
+      [headers, ...rows]
+        .map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(","))
+        .join("\n");
+
+    // Create a downloadable blob and click it
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "invoices.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleGenerateReport = () => {
+    setShowReport(prev => !prev);
+  };
 
   // Helper function to determine if an invoice is overdue
   const isOverdue = (invoice) => {
@@ -155,12 +158,15 @@ const handleExport = () => {
               Create Invoice
             </button>
             <button className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-md transition-all"
-            onClick={handleExport}>
+              onClick={handleExport}>
               Export Data
             </button>
-            <button className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-md transition-all">
+            <button className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-md transition-all"
+              onClick={handleGenerateReport}>
               Generate Report
             </button>
+
+
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-md transition-all flex items-center gap-2"
@@ -224,8 +230,8 @@ const handleExport = () => {
                       key={days}
                       onClick={() => handleOverdueDaysChange(days)}
                       className={`px-3 py-1 text-sm rounded-md transition-all ${overdueDays === days
-                          ? 'bg-lime-400 text-white'
-                          : 'bg-white/20 text-white/80 hover:bg-white/30'
+                        ? 'bg-lime-400 text-white'
+                        : 'bg-white/20 text-white/80 hover:bg-white/30'
                         }`}
                     >
                       {days}d
@@ -241,6 +247,11 @@ const handleExport = () => {
         </div>
       )}
 
+      {/* Toggled Charts */}
+      {showReport && (
+        <InvoiceCharts onClose={() => setShowReport(false)} />
+      )}
+
       {/* Invoice Status Filter */}
       <div className="mb-6">
         <div className="bg-slate-800/90 p-6 rounded-2xl shadow-xl">
@@ -252,8 +263,8 @@ const handleExport = () => {
                   key={status}
                   onClick={() => handleFilterChange(status)}
                   className={`px-4 py-2 rounded-md font-medium transition-all ${statusFilter === status
-                      ? 'bg-lime-400 text-white'
-                      : 'bg-white/20 text-white/80 hover:bg-white/30'
+                    ? 'bg-lime-400 text-white'
+                    : 'bg-white/20 text-white/80 hover:bg-white/30'
                     }`}
                 >
                   {status}
