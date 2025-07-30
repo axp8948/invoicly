@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import authService from '../appwrite/auth'
 
 export default function Signup() {
   const [email, setEmail] = useState('')
@@ -7,13 +8,22 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+
+  const handleSubmit = async (e) => {
     e.preventDefault()
     if (password !== confirmPassword) {
       alert('Passwords do not match')
       return
     }
-   
+    try {
+      const response = await authService.createAccount({email, password})
+      if (response){
+        navigate("/login")
+      }
+    } catch (error) {
+      console.log("Error While Signing Up: ", error)
+    }
+
   }
 
   return (

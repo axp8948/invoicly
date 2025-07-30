@@ -1,17 +1,26 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import authService from "../appwrite/auth";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
   };
 
-  const handleLogin = () => {
-    navigate("/dashboard");
+  const handleLogin = async() => {
+    try {
+      const response = await authService.login({email, password})
+      if (response){
+        navigate("/dashboard")
+      }
+    } catch (error) {
+      console.log("Sign In Error: ", error)
+    }
   };
 
   return (
