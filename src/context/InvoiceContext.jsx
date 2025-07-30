@@ -1,114 +1,50 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useEffect, useState } from "react";
+import invoiceService from "../appwrite/invoiceServices";
+import authService from "../appwrite/auth";
 
 const InvoiceContext = createContext();
 
-export const useInvoices = () => {
-  const context = useContext(InvoiceContext);
-  if (!context) {
-    throw new Error('useInvoices must be used within an InvoiceProvider');
-  }
-  return context;
-};
+export function useInvoices() {
+  return useContext(InvoiceContext);
+}
 
-export const InvoiceProvider = ({ children }) => {
-  // Initialize with sample data if no existing data in localStorage
-  const getInitialInvoices = () => {
-    const saved = localStorage.getItem('invoices');
-    if (saved) {
-      return JSON.parse(saved);
-    }
-    return [
-      {
-        id: 1,
-        invoiceNumber: "INV-001",
-        date: "2024/01/15",
-        company: "Acme Ltd Drone Company",
-        amount: 250.00,
-        status: "Paid"
-      },
-      {
-        id: 2,
-        invoiceNumber: "INV-002", 
-        date: "2024/01/16",
-        company: "Beta Ltd Drone Company",
-        amount: 300.00,
-        status: "Pending"
-      },
-      {
-        id: 3,
-        invoiceNumber: "INV-003",
-        date: "2024/01/17", 
-        company: "Gamma Ltd Drone Company",
-        amount: 450.00,
-        status: "Pending"
-      }
-    ];
-  };
+export function InvoiceProvider({ children }) {
+  const [invoices, setInvoices] = useState([]);
 
-  const [invoices, setInvoices] = useState(getInitialInvoices);
-
-  // Save to localStorage whenever invoices change
   useEffect(() => {
-    localStorage.setItem('invoices', JSON.stringify(invoices));
-  }, [invoices]);
+    (async () => {
+      const user = await authService.getCurrentUser();
+      if (user) {
+        const result = await invoiceService.getInvoices(user.$id);
+        setInvoices(result.documents);
+      }
+    })();
+  }, []);
 
-  // Generate next invoice number
-  const generateInvoiceNumber = () => {
-    const maxNum = invoices.reduce((max, invoice) => {
-      const num = parseInt(invoice.invoiceNumber.replace('INV-', ''));
-      return num > max ? num : max;
-    }, 0);
-    return `INV-${String(maxNum + 1).padStart(3, '0')}`;
+  const createInvoice = async (data) => {
+    const user = await authService.getCurrentUser();
+    const newInvoice = await invoiceService.createInvoice({
+      ...data,
+      userId: user.$id
+    });
+    setInvoices((prev) => [newInvoice, ...prev]);
   };
 
-  // Add new invoice
-  const addInvoice = (invoiceData) => {
-    const newInvoice = {
-      id: Date.now(), // Simple ID generation
-      invoiceNumber: generateInvoiceNumber(),
-      date: invoiceData.date,
-      company: invoiceData.company,
-      amount: parseFloat(invoiceData.amount),
-      status: invoiceData.status === "Y" ? "Paid" : "Pending"
-    };
-    
-    setInvoices(prev => [newInvoice, ...prev]); // Add to beginning of array
-    return newInvoice;
+  const deleteInvoice = async (id) => {
+    await invoiceService.deleteInvoice(id);
+    setInvoices((prev) => prev.filter((inv) => inv.$id !== id));
   };
 
-  // Update existing invoice
-  const updateInvoice = (id, updatedData) => {
-    setInvoices(prev => 
-      prev.map(invoice => 
-        invoice.id === id 
-          ? { ...invoice, ...updatedData }
-          : invoice
-      )
+  const updateInvoice = async (id, data) => {
+    const updated = await invoiceService.updateInvoice(id, data);
+    setInvoices((prev) =>
+      prev.map((inv) => (inv.$id === id ? updated : inv))
     );
   };
 
-  // Delete invoice
-  const deleteInvoice = (id) => {
-    setInvoices(prev => prev.filter(invoice => invoice.id !== id));
-  };
-
-  // Get invoice by ID
-  const getInvoiceById = (id) => {
-    return invoices.find(invoice => invoice.id === parseInt(id));
-  };
-
-  const value = {
-    invoices,
-    addInvoice,
-    updateInvoice,
-    deleteInvoice,
-    getInvoiceById,
-    generateInvoiceNumber
-  };
-
   return (
-    <InvoiceContext.Provider value={value}>
+    <InvoiceContext.Provider value={{ invoices, createInvoice, deleteInvoice, updateInvoice }}>
       {children}
     </InvoiceContext.Provider>
   );
-}; 
+}

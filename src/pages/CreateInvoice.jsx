@@ -6,34 +6,36 @@ export default function CreateInvoice() {
   const [invoiceDate, setInvoiceDate] = useState("");
   const [invoiceCompanyName, setCompanyName] = useState("");
   const [invoiceAmount, setAmount] = useState("");
-  const [invoicePayStatus, setPayStatus] = useState("N");
+  const [invoicePayStatus, setPayStatus] = useState("Pending"); // Use "Pending" or "Paid"
   const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const navigate = useNavigate();
-  const { addInvoice } = useInvoices();
+  const { createInvoice } = useInvoices(); // <- FIXED
 
-  //Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Create the invoice using the context
-    setTimeout(() => {
-      const newInvoice = addInvoice({
+
+    try {
+       const invoiceNumber = "INV-" + Date.now();
+      const newInvoice = await createInvoice({
+        invoiceNumber,
         date: invoiceDate,
         company: invoiceCompanyName,
-        amount: invoiceAmount,
+        amount: parseFloat(invoiceAmount),
         status: invoicePayStatus
       });
-      
-      setIsLoading(false);
-      setSuccessMessage(`Invoice ${newInvoice.invoiceNumber} created successfully!`);
-      
-      // Navigate to dashboard after a brief delay to show success message
+
+      setSuccessMessage(`Invoice created successfully!`);
       setTimeout(() => {
         navigate("/dashboard");
       }, 1500);
-    }, 1000);
+    } catch (err) {
+      console.error("Error creating invoice", err);
+      alert("Failed to create invoice.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -48,7 +50,6 @@ export default function CreateInvoice() {
 
         <input
           type="date"
-          placeholder=""
           className="w-full px-4 py-3 bg-white/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-300 placeholder-white/80"
           value={invoiceDate}
           onChange={(e) => setInvoiceDate(e.target.value)}
@@ -66,14 +67,13 @@ export default function CreateInvoice() {
 
         <input
           type="number"
-          min="0" // Prevent negative values
-          step="0.01" // Allow up to 2 decimal places
+          min="0"
+          step="0.01"
           placeholder="Amount"
           className="w-full px-4 py-3 bg-white/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-300 placeholder-white/80"
           value={invoiceAmount}
           onChange={(e) => {
             const value = e.target.value;
-            // Validate input to allow only numbers and up to 2 decimal places
             if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {
               setAmount(value);
             }
@@ -85,8 +85,8 @@ export default function CreateInvoice() {
           type="checkbox"
           id="paidStatus"
           className="mr-2 accent-lime-400"
-          checked={invoicePayStatus === "Y"}
-          onChange={(e) => setPayStatus(e.target.checked ? "Y" : "N")}
+          checked={invoicePayStatus === "Paid"}
+          onChange={(e) => setPayStatus(e.target.checked ? "Paid" : "Pending")}
         />
         <label htmlFor="paidStatus" className="text-white align-middle">
           Paid?
@@ -99,20 +99,20 @@ export default function CreateInvoice() {
         >
           {isLoading ? "Saving..." : "Save Invoice"}
         </button>
-        <>
-          {successMessage && (
-            <div className="p-4 rounded-md text-sm bg-green-500/20 border border-green-500/30 text-green-300">
-              {successMessage}
-            </div>
-          )}
-          <button
-            type="button"
-            className="w-full py-3 mt-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-md transition-all"
-            onClick={() => navigate("/dashboard")}
-          >
-            Return to Dashboard
-          </button>
-        </>
+
+        {successMessage && (
+          <div className="p-4 rounded-md text-sm bg-green-500/20 border border-green-500/30 text-green-300">
+            {successMessage}
+          </div>
+        )}
+
+        <button
+          type="button"
+          className="w-full py-3 mt-2 bg-slate-700 hover:bg-slate-600 text-white font-semibold rounded-md transition-all"
+          onClick={() => navigate("/dashboard")}
+        >
+          Return to Dashboard
+        </button>
       </form>
     </div>
   );

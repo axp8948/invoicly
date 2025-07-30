@@ -6,7 +6,7 @@ export default function EditInvoice() {
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const invoiceId = searchParams.get('id')
-  const { getInvoiceById, updateInvoice } = useInvoices()
+  const { invoices, updateInvoice } = useInvoices()
 
   const [company, setCompany] = useState('')
   const [amount, setAmount] = useState('')
@@ -16,21 +16,22 @@ export default function EditInvoice() {
   const [isLoading, setIsLoading] = useState(false)
   const [invoiceNumber, setInvoiceNumber] = useState('')
 
-  // Load invoice data when component mounts
+  // Load invoice data
   useEffect(() => {
-    if (invoiceId) {
-      const invoice = getInvoiceById(parseInt(invoiceId))
-      if (invoice) {
-        setCompany(invoice.company)
-        setAmount(invoice.amount.toString())
-        setDate(invoice.date)
-        setStatus(invoice.status)
-        setInvoiceNumber(invoice.invoiceNumber)
-      } else {
-        setMessage('Invoice not found')
-      }
+    if (!invoiceId) return
+
+    const invoice = invoices.find(inv => inv.$id === invoiceId)
+    if (!invoice) {
+      setMessage("Invoice not found")
+      return
     }
-  }, [invoiceId, getInvoiceById])
+
+    setCompany(invoice.company)
+    setAmount(invoice.amount.toString())
+    setDate(invoice.date.slice(0, 10)) // 'YYYY-MM-DD'
+    setStatus(invoice.status)
+    setInvoiceNumber(invoice.invoiceNumber)
+  }, [invoiceId, invoices])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -38,11 +39,7 @@ export default function EditInvoice() {
     setMessage('')
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
-
-      // Update invoice using context
-      updateInvoice(parseInt(invoiceId), {
+      await updateInvoice(invoiceId, {
         company,
         amount: parseFloat(amount),
         date,
@@ -50,12 +47,11 @@ export default function EditInvoice() {
       })
 
       setMessage('Invoice updated successfully!')
-      
-      // Navigate back to dashboard after delay
       setTimeout(() => {
         navigate('/dashboard')
       }, 1500)
     } catch (error) {
+      console.error(error)
       setMessage('Failed to update invoice. Try again.')
     } finally {
       setIsLoading(false)
@@ -143,4 +139,3 @@ export default function EditInvoice() {
     </div>
   )
 }
-// Tej

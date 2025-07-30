@@ -5,7 +5,7 @@ import authService from "../appwrite/auth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { invoices, deleteInvoice } = useInvoices();
+  const { invoices, deleteInvoice, createInvoice, updateInvoice } = useInvoices();
   const [statusFilter, setStatusFilter] = useState('All');
   const [overdueDays, setOverdueDays] = useState(() => {
     const saved = localStorage.getItem('overdueDays');
@@ -16,7 +16,7 @@ export default function Dashboard() {
   const handleLogout = async () => {
     try {
       const response = await authService.logout()
-      if (response){
+      if (response) {
         console.log("Logout Successful")
         navigate("/login")
       }
@@ -49,11 +49,11 @@ export default function Dashboard() {
   };
 
   // Filter invoices based on selected status
-  const filteredInvoices = statusFilter === 'All' 
-    ? invoices 
+  const filteredInvoices = statusFilter === 'All'
+    ? invoices
     : statusFilter === 'Overdue'
-    ? invoices.filter(invoice => isOverdue(invoice))
-    : invoices.filter(invoice => invoice.status === statusFilter);
+      ? invoices.filter(invoice => isOverdue(invoice))
+      : invoices.filter(invoice => invoice.status === statusFilter);
 
   const handleFilterChange = (newFilter) => {
     setStatusFilter(newFilter);
@@ -156,7 +156,7 @@ export default function Dashboard() {
                 </svg>
               </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-white/80 text-sm font-medium mb-2">
@@ -179,7 +179,7 @@ export default function Dashboard() {
                   Invoices unpaid for more than {overdueDays} days will be marked as overdue
                 </p>
               </div>
-              
+
               <div>
                 <label className="block text-white/80 text-sm font-medium mb-2">
                   Quick Presets
@@ -189,11 +189,10 @@ export default function Dashboard() {
                     <button
                       key={days}
                       onClick={() => handleOverdueDaysChange(days)}
-                      className={`px-3 py-1 text-sm rounded-md transition-all ${
-                        overdueDays === days
+                      className={`px-3 py-1 text-sm rounded-md transition-all ${overdueDays === days
                           ? 'bg-lime-400 text-white'
                           : 'bg-white/20 text-white/80 hover:bg-white/30'
-                      }`}
+                        }`}
                     >
                       {days}d
                     </button>
@@ -218,11 +217,10 @@ export default function Dashboard() {
                 <button
                   key={status}
                   onClick={() => handleFilterChange(status)}
-                  className={`px-4 py-2 rounded-md font-medium transition-all ${
-                    statusFilter === status
+                  className={`px-4 py-2 rounded-md font-medium transition-all ${statusFilter === status
                       ? 'bg-lime-400 text-white'
                       : 'bg-white/20 text-white/80 hover:bg-white/30'
-                  }`}
+                    }`}
                 >
                   {status}
                   {status === 'All' && (
@@ -288,12 +286,11 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Invoice Table */}
+      {/* Invoice Table (continued) */}
       <div className="bg-slate-800/90 rounded-2xl shadow-xl overflow-hidden">
         <div className="p-6 border-b border-white/20">
           <h2 className="text-xl font-bold text-white">Recent Invoices</h2>
         </div>
-        
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -308,21 +305,21 @@ export default function Dashboard() {
             </thead>
             <tbody>
               {filteredInvoices.map((invoice) => (
-                <tr key={invoice.id} className="border-b border-white/10 hover:bg-white/5 transition-colors">
+                <tr key={invoice.$id} className="border-b border-white/10 hover:bg-white/5 transition-colors">
                   <td className="px-6 py-4 text-white font-medium">{invoice.invoiceNumber}</td>
-                  <td className="px-6 py-4 text-white/80">{invoice.date}</td>
+                  <td className="px-6 py-4 text-white/80">{new Date(invoice.date).toLocaleDateString()}</td>
                   <td className="px-6 py-4 text-white/80">{invoice.company}</td>
                   <td className="px-6 py-4 text-white font-medium">${invoice.amount.toFixed(2)}</td>
                   <td className="px-6 py-4">{getStatusBadge(invoice)}</td>
                   <td className="px-6 py-4">
                     <button
-                      onClick={() => handleEditInvoice(invoice.id)}
+                      onClick={() => handleEditInvoice(invoice.$id)}
                       className="px-3 py-1 bg-white/20 hover:bg-white/30 text-white text-sm rounded-md transition-all mr-2"
                     >
                       Edit
                     </button>
-                    <button 
-                      onClick={() => handleDeleteInvoice(invoice.id)}
+                    <button
+                      onClick={() => handleDeleteInvoice(invoice.$id)}
                       className="px-3 py-1 bg-red-500/20 hover:bg-red-500/30 text-red-300 text-sm rounded-md transition-all border border-red-500/30"
                     >
                       Delete
@@ -334,49 +331,6 @@ export default function Dashboard() {
           </table>
         </div>
       </div>
-
-      {/* Empty State Message (if no invoices) */}
-      {filteredInvoices.length === 0 && invoices.length > 0 && (
-        <div className="bg-slate-800/90 p-12 rounded-2xl shadow-xl text-center">
-          <div className="text-white/60 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-semibold text-white mb-2">No {statusFilter.toLowerCase()} invoices</h3>
-          <p className="text-white/80 mb-6">Try selecting a different filter or create a new invoice</p>
-          <button
-            onClick={() => handleFilterChange('All')}
-            className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-md transition-all mr-4"
-          >
-            Show All Invoices
-          </button>
-          <button
-            onClick={handleCreateInvoice}
-            className="px-6 py-3 bg-lime-400 hover:bg-lime-300 text-white font-semibold rounded-md transition-all"
-          >
-            Create Invoice
-          </button>
-        </div>
-      )}
-      
-      {invoices.length === 0 && (
-        <div className="bg-slate-800/90 p-12 rounded-2xl shadow-xl text-center">
-          <div className="text-white/60 mb-4">
-            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-          </div>
-          <h3 className="text-xl font-semibold text-white mb-2">No invoices yet</h3>
-          <p className="text-white/80 mb-6">Get started by creating your first invoice</p>
-          <button
-            onClick={handleCreateInvoice}
-            className="px-6 py-3 bg-lime-400 hover:bg-lime-300 text-white font-semibold rounded-md transition-all"
-          >
-            Create Your First Invoice
-          </button>
-        </div>
-      )}
     </div>
   );
 }
