@@ -39,6 +39,39 @@ export default function Dashboard() {
     }
   };
 
+
+// 1. Add this handler above your return statement
+const handleExport = () => {
+  // 1.1 Define your CSV headers
+  const headers = ["Invoice #", "Date", "Company", "Amount", "Status"];
+
+  // 1.2 Map each invoice into a row array
+  const rows = invoices.map(inv => [
+    inv.invoiceNumber,
+    new Date(inv.date).toLocaleDateString(),
+    inv.company,
+    inv.amount.toFixed(2),
+    inv.status,
+  ]);
+
+  // 1.3 Build the CSV content
+  const csvContent =
+    [headers, ...rows]
+      .map(row => row.map(cell => `"${cell.replace(/"/g, '""')}"`).join(","))
+      .join("\n");
+
+  // 1.4 Create a downloadable blob and click it
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.setAttribute("download", "invoices.csv");
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
   // Helper function to determine if an invoice is overdue
   const isOverdue = (invoice) => {
     if (invoice.status === 'Paid') return false;
@@ -121,7 +154,8 @@ export default function Dashboard() {
               </svg>
               Create Invoice
             </button>
-            <button className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-md transition-all">
+            <button className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-md transition-all"
+            onClick={handleExport}>
               Export Data
             </button>
             <button className="px-6 py-3 bg-white/20 hover:bg-white/30 text-white font-semibold rounded-md transition-all">
