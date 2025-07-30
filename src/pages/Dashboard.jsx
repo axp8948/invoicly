@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInvoices } from "../context/InvoiceContext";
+import authService from "../appwrite/auth";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,8 +13,16 @@ export default function Dashboard() {
   });
   const [showSettings, setShowSettings] = useState(false);
 
-  const handleLogout = () => {
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      const response = await authService.logout()
+      if (response){
+        console.log("Logout Successful")
+        navigate("/login")
+      }
+    } catch (error) {
+      console.log("Error While Logging Out: ", error)
+    }
   };
 
   const handleCreateInvoice = () => {

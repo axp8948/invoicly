@@ -67,25 +67,32 @@ export class AuthService {
 
     async logout() {
         try {
+            // Check if logged in
+            await this.account.get(); // This throws if no session
+
+            // If logged in, then delete session
             await this.account.deleteSession('current');
+            return true;
         } catch (error) {
-            console.log("Appwrite service :: logout :: error", error)
+            console.log("Appwrite service :: logout :: error", error);
+            return false;
         }
     }
+
 
     /**
    * Generates a one-time JWT for the currently logged-in user.
    * Your server will use this to authenticate /api/chat calls.
    */
-  async createJWT() {
-    try {
-      const result = await this.account.createJWT();
-      return result; // { jwt: "..." }
-    } catch (error) {
-      console.error("AuthService.createJWT error", error);
-      throw error;
+    async createJWT() {
+        try {
+            const result = await this.account.createJWT();
+            return result; // { jwt: "..." }
+        } catch (error) {
+            console.error("AuthService.createJWT error", error);
+            throw error;
+        }
     }
-  }
 }
 
 const authService = new AuthService();
