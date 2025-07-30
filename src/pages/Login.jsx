@@ -13,6 +13,11 @@ export default function Login() {
   };
 
   const handleLogin = async() => {
+    if (password.length < 8)
+    {
+      alert("Password must be 8 characters long")
+      return
+    }
     try {
       const response = await authService.login({email, password})
       if (response){

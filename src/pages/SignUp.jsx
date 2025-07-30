@@ -15,6 +15,11 @@ export default function Signup() {
       alert('Passwords do not match')
       return
     }
+    if (password.length < 8)
+    {
+      alert("Password must be 8 characters long")
+      return
+    }
     try {
       const response = await authService.createAccount({email, password})
       if (response){
