@@ -24,6 +24,7 @@ export default function Login() {
       navigate("/dashboard");
     } catch (error) {
       console.error("Sign In Error:", error);
+      // appwrite throws 401 error if wrong credentials 
       if (error.code === 401) {
         setErrorMessage("Invalid email or password.");
       } else {

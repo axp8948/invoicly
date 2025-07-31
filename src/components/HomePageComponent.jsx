@@ -19,6 +19,7 @@ export default function Home() {
 </span>
   </span>
 
+    {/* Typing Animation using react-typed */}
   <ReactTyped
     strings={['Manage Your Invoices',
   'Track Payments with Ease',

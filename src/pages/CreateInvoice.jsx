@@ -72,6 +72,9 @@ export default function CreateInvoice() {
           placeholder="Amount"
           className="w-full px-4 py-3 bg-white/20 rounded-md focus:outline-none focus:ring-2 focus:ring-lime-300 placeholder-white/80"
           value={invoiceAmount}
+          
+          // Regex Source: StackOverflow
+          // https://stackoverflow.com/questions/10023845/regex-in-javascript-for-validating-decimal-numbers?
           onChange={(e) => {
             const value = e.target.value;
             if (value === "" || /^\d+(\.\d{0,2})?$/.test(value)) {

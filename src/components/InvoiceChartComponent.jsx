@@ -1,4 +1,8 @@
-// src/components/InvoiceCharts.jsx
+// Chart Generation using rechart library
+// Credit: https://recharts.org/en-US
+
+// Tutorial Credit: GeeksForGeeks
+// https://www.geeksforgeeks.org/reactjs/create-a-pie-chart-using-recharts-in-reactjs/
 import React from 'react';
 import {
   PieChart,
