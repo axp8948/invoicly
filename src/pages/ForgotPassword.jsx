@@ -17,13 +17,7 @@ export default function ForgotPassword() {
       // Simulate API call for now - replace with actual backend endpoint
       await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate network delay
       
-      // For now, just simulate success
-      // Replace this with actual API call when backend is ready
-      // const response = await fetch("/api/forgot-password", {
-      //   method: "POST",
-      //   headers: { "Content-Type": "application/json" },
-      //   body: JSON.stringify({ email }),
-      // });
+
       
       // if (response.ok) {
       setIsSuccess(true);

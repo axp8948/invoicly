@@ -5,26 +5,32 @@ import authService from "../appwrite/auth";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-  };
+    setErrorMessage("");
 
-  const handleLogin = async() => {
-    if (password.length < 8)
-    {
-      alert("Password must be 8 characters long")
-      return
+    if (password.length < 8) {
+      setErrorMessage("Password must be at least 8 characters.");
+      return;
     }
+
+    setIsLoading(true);
     try {
-      const response = await authService.login({email, password})
-      if (response){
-        navigate("/dashboard")
-      }
+      await authService.login({ email, password });
+      navigate("/dashboard");
     } catch (error) {
-      console.log("Sign In Error: ", error)
+      console.error("Sign In Error:", error);
+      if (error.code === 401) {
+        setErrorMessage("Invalid email or password.");
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -32,7 +38,7 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-tr from-slate-900 via-slate-700 to-slate-900 px-4 p-2">
       <form
         onSubmit={handleSubmit}
-        className="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-md text-white space-y-6"
+        className="bg-white/10 backdrop-blur-md p-8 rounded-2xl shadow-xl w-full max-w-md text-white space-y-4"
       >
         <h2 className="text-3xl font-bold text-center">
           Login to <span className="text-lime-300">Invoicly</span>
@@ -56,12 +62,22 @@ export default function Login() {
           required
         />
 
+        {errorMessage && (
+          <div className="text-red-500 text-sm font-medium">
+            {errorMessage}
+          </div>
+        )}
+
         <button
           type="submit"
-          className="w-full py-3 bg-lime-400 hover:bg-lime-300 text-white font-semibold rounded-md transition-all"
-          onClick={handleLogin}
+          disabled={isLoading}
+          className={`w-full py-3 text-white font-semibold rounded-md transition-all ${
+            isLoading
+              ? "bg-gray-500 cursor-not-allowed"
+              : "bg-lime-400 hover:bg-lime-300"
+          }`}
         >
-          Login
+          {isLoading ? "Logging in…" : "Login"}
         </button>
 
         <div className="text-center">
